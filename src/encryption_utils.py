@@ -1,4 +1,3 @@
-# crypto_utils.py
 import os
 import base64
 import bcrypt

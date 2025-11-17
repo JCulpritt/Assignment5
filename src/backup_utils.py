@@ -1,4 +1,3 @@
-# backup_utils.py
 import os
 from encryption_utils import rsa_encrypt_key, rsa_decrypt_key, load_or_create_aes_key
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
