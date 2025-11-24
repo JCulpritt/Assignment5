@@ -7,6 +7,7 @@ from backup_utils import encrypt_backup, decrypt_backup, sha256_file, verify_bac
 MYSQLDUMP = "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysqldump.exe"
 MYSQL = "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe"
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 
 DB_USER = None
@@ -30,8 +31,9 @@ def connect_db():
 
 
 def backup_database():
-    sql_file = "backup.sql"
-    enc_file = "backup_encrypted.bin"
+    sql_file = os.path.join(BASE_DIR, "backup.sql")
+    enc_file = os.path.join(BASE_DIR, "backup_encrypted.bin")
+    hash_file = os.path.join(BASE_DIR, "backup_hash.txt")
 
     print("Creating SQL dump...")
     os.system(f"\"{MYSQLDUMP}\" -u {DB_USER} -p{DB_PASSWORD} {DB_NAME} > {sql_file}")
@@ -41,16 +43,16 @@ def backup_database():
 
     # Generate integrity hash
     backup_hash = sha256_file(enc_file)
-    with open("backup_hash.txt", "w") as f:
+    with open(hash_file, "w") as f:
         f.write(backup_hash)
 
     print("\nBackup complete:")
     print(f"Encrypted File: {enc_file}")
-    print(f"Integrity Hash stored in backup_hash.txt\n")
+    print(f"Integrity Hash stored in {hash_file}\n")
 
 def restore_backup():
-    enc_file = "backup_encrypted.bin"
-    restored_sql = "restored_backup.sql"
+    enc_file = os.path.join(BASE_DIR, "backup_encrypted.bin")
+    restored_sql = os.path.join(BASE_DIR, "restored_backup.sql")
 
     print("Decrypting backup...")
     decrypt_backup(enc_file, restored_sql)
@@ -61,9 +63,10 @@ def restore_backup():
     print("Database restored successfully.\n")
 
 def verify_backup():
-    enc_file = "backup_encrypted.bin"
+    enc_file = os.path.join(BASE_DIR, "backup_encrypted.bin")
+    hash_file = os.path.join(BASE_DIR, "backup_hash.txt")
 
-    with open("backup_hash.txt", "r") as f:
+    with open(hash_file, "r") as f:
         stored_hash = f.read().strip()
 
     if verify_backup_hash(enc_file, stored_hash):

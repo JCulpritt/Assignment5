@@ -6,16 +6,20 @@ from cryptography.hazmat.primitives import padding, serialization, hashes
 from cryptography.hazmat.primitives.asymmetric import rsa, padding as rsa_padding
 
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+KEYS_DIR = os.path.join(BASE_DIR, "rsa_keys")
+
+
 # =====================================================
 #  LOADING RSA KEYS
 # =====================================================
 def load_public_key():
-    with open("rsa_keys/public.pem", "rb") as f:
+    with open(os.path.join(KEYS_DIR, "public.pem"), "rb") as f:
         return serialization.load_pem_public_key(f.read())
 
 
 def load_private_key():
-    with open("rsa_keys/private.pem", "rb") as f:
+    with open(os.path.join(KEYS_DIR, "private.pem"), "rb") as f:
         return serialization.load_pem_private_key(f.read(), password=None)
 
 
@@ -23,7 +27,7 @@ def load_private_key():
 #  AES ENCRYPTION (FOR PII)
 # =====================================================
 
-AES_KEY_FILE = "aes.key"
+AES_KEY_FILE = os.path.join(BASE_DIR, "aes.key")
 
 def load_or_create_aes_key():
     if os.path.exists(AES_KEY_FILE):
